@@ -1,0 +1,21 @@
+\begin{table}[ht]
+\caption{Sample efficiency on Kelmarsh: MAE (kWh) averaged over all 72 horizons, at training fractions of 10\%, 50\%, 100\%, and the efficiency ratio MAE@10\% / MAE@100\%.}
+\label{tab:sample_efficiency}
+\begin{tabular}{lrrrr}
+\toprule
+fraction & MAE @ 10% (kWh) & MAE @ 50% (kWh) & MAE @ 100% (kWh) & Efficiency (10%/100%) \\
+model_label &  &  &  &  \\
+\midrule
+Ridge & 5073.350 & 2552.360 & 2275.730 & 2.230 \\
+Random Forest & 1544.950 & 1211.710 & 1123.760 & 1.370 \\
+XGBoost & 1536.720 & 1217.950 & 1120.340 & 1.370 \\
+NLinear & 2477.110 & 2359.460 & 2339.110 & 1.060 \\
+DLinear & 2466.510 & 2344.650 & 2313.940 & 1.070 \\
+LSTM & 1712.190 & 1394.580 & 1240.530 & 1.380 \\
+TCN & 1644.590 & 1342.880 & 1214.970 & 1.350 \\
+Transformer & 1554.270 & 1198.900 & 1120.210 & 1.390 \\
+N-BEATS & 2633.320 & 2195.650 & 1796.330 & 1.470 \\
+N-HiTS & 2547.580 & 2004.360 & 1789.930 & 1.420 \\
+\bottomrule
+\end{tabular}
+\end{table}

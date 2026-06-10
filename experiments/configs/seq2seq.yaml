@@ -1,0 +1,125 @@
+# WindBench Seq2Seq Benchmark Config
+# Run with: python scripts/run_all.py --config experiments/configs/seq2seq.yaml --skip-scaling
+#
+# All models are trained ONCE per farm on all NWP lead times (h=1..72).
+# Every model receives the same information: the full NWP run (T=72 steps × F features).
+#
+# ── Model taxonomy ────────────────────────────────────────────────────────────
+#
+#  Statistical  │ arima          │ SARIMAX on energy time series; no NWP
+#               │                │
+#  Tree         │ random_forest  │ All NWP runs per production hour
+#               │ xgboost        │ (freshest→oldest), horizon-masked
+#               │                │
+#  Deep NN      │ lstm           │ LSTM over (T, F) NWP run sequence
+#  (raw PyTorch)│ transformer    │ Transformer encoder over (T, F)
+#               │ nbeats         │ N-BEATS generic stack
+#               │ nhits          │ N-HiTS multi-rate hierarchical
+#               │ tcn            │ Dilated causal convolutions
+#               │ nlinear        │ Linear with last-step normalization
+#               │ dlinear        │ Trend-seasonal decomposition + linear
+#
+# ─────────────────────────────────────────────────────────────────────────────
+
+data:
+  raw_dir: data/raw
+  target_col: energy_total
+  farms: null                         # null = all farms; or [pilot_kelmarsh]
+
+seq2seq:
+  lead_times: null                    # null = 1..72 (default)
+  eval_horizons: null                 # null = all lead times (1..72)
+  val_frac: 0.10
+  test_frac: 0.20
+  min_lead_coverage: 0.80
+  fill_method: interpolate
+  n_lags: 24                          # hours of observed production appended as context features
+  seed: 42                            # global RNG seed for full reproducibility
+
+models:
+  # ── Statistical ────────────────────────────────────────────────────────────
+  - name: arima
+    order: [2, 1, 2]
+    seasonal_order: [1, 0, 1, 24]
+
+  # ── Linear ─────────────────────────────────────────────────────────────────
+  - name: ridge
+    alpha: 1.0
+
+  # ── Tree ───────────────────────────────────────────────────────────────────
+  - name: random_forest
+    n_estimators: 200
+    max_depth: null
+    min_samples_leaf: 5
+    n_jobs: -1
+    random_state: 42
+
+  - name: xgboost
+    n_estimators: 300
+    learning_rate: 0.05
+    max_depth: 6
+    subsample: 0.8
+    colsample_bytree: 0.8
+    random_state: 42
+
+  # ── Deep NN ────────────────────────────────────────────────────────────────
+  - name: lstm
+    hidden_dim: 128
+    num_layers: 2
+    dropout: 0.1
+    lr: 0.001
+    epochs: 50
+    batch_size: 64
+
+  - name: transformer
+    d_model: 64
+    nhead: 4
+    num_layers: 2
+    dim_feedforward: 256
+    dropout: 0.1
+    causal: true
+    lr: 0.001
+    epochs: 50
+    batch_size: 64
+
+  - name: nbeats
+    num_stacks: 30
+    num_blocks_per_stack: 1
+    hidden_dim: 256
+    n_layers: 4
+    lr: 0.001
+    epochs: 50
+    batch_size: 64
+
+  - name: nhits
+    num_stacks: 3
+    num_blocks_per_stack: 1
+    hidden_dim: 256
+    n_layers: 2
+    lr: 0.001
+    epochs: 50
+    batch_size: 64
+
+  - name: tcn
+    hidden_channels: 64
+    num_levels: 4
+    kernel_size: 3
+    dropout: 0.1
+    lr: 0.001
+    epochs: 50
+    batch_size: 64
+
+  - name: nlinear
+    lr: 0.001
+    epochs: 50
+    batch_size: 64
+
+  - name: dlinear
+    kernel_size: 25
+    lr: 0.001
+    epochs: 50
+    batch_size: 64
+
+output:
+  results_path:      experiments/results/seq2seq.csv
+  full_horizon_path: experiments/results/seq2seq_full_horizons.csv

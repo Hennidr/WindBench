@@ -1,0 +1,68 @@
+# Data
+# NZ farm parquets are shipped with the repo.
+# Kelmarsh and Penmanshiel exceed GitHub's 100 MB per-file limit — fetch
+# them from the original sources listed in data/raw/README.md.
+data/raw/kelmarsh.parquet
+data/raw/penmanshiel.parquet
+data/processed/
+experiments/results/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+env/
+# Stray venv accidentally created inside the source package — keep only
+# the actual python source (data/, evaluation/, models/, visualization/).
+windbench/bin/
+windbench/include/
+windbench/lib/
+windbench/share/
+windbench/pyvenv.cfg
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Test / tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local AI / agent state (Claude Code, Cursor, etc.)
+.claude/
+.cursor/
+.aider*
+CLAUDE.md
+**/CLAUDE.md
+
+# Thesis drafting materials (not part of the published repo)
+Thesis_context/
+*.pdf.bak
+~$*
+
+# Model checkpoints
+*.pt
+*.pth
+*.ckpt
+
+# Logs
+*.log
+wandb/

@@ -1,0 +1,21 @@
+\begin{table}[ht]
+\caption{Probabilistic evaluation: PICP@90 (dimensionless coverage), MPIW@90 (normalised by training target range, dimensionless), CRPS (kWh). Averaged across farms and 72 horizons.}
+\label{tab:probabilistic}
+\begin{tabular}{lrrr}
+\toprule
+ & PICP@90 & MPIW@90 (norm.) & CRPS (kWh) \\
+model_label &  &  &  \\
+\midrule
+Ridge & 0.900 & 0.820 & 15946.325 \\
+Random Forest & 0.899 & 0.514 & 9564.129 \\
+XGBoost & 0.898 & 0.514 & 9575.258 \\
+NLinear & 0.912 & 0.781 & 15125.724 \\
+DLinear & 0.912 & 0.776 & 14834.930 \\
+LSTM & 0.913 & 0.673 & 11774.566 \\
+TCN & 0.909 & 0.618 & 11043.508 \\
+Transformer & 0.905 & 0.571 & 10460.387 \\
+N-BEATS & 0.903 & 0.710 & 12725.090 \\
+N-HiTS & 0.897 & 0.683 & 12455.953 \\
+\bottomrule
+\end{tabular}
+\end{table}

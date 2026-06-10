@@ -1,0 +1,113 @@
+# WindBench Full Experiment Config
+# Runs both the main benchmark and the data-scaling experiment.
+#
+# Usage:
+#   python scripts/run_all.py --config experiments/configs/full.yaml
+
+data:
+  raw_dir: data/raw
+  target_col: energy_total
+  farms: null                         # null = all farms; or [pilot_kelmarsh]
+
+seq2seq:
+  lead_times: null                    # null = 1..72 (default)
+  eval_horizons: null                 # null = all lead times (1..72)
+  val_frac: 0.10
+  test_frac: 0.20
+  min_lead_coverage: 0.80
+  fill_method: interpolate
+  n_lags: 24                          # hours of observed production appended as context
+  seed: 42                            # global RNG seed for full reproducibility
+
+scaling:
+  fractions: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+
+models:
+  # ── Statistical ──────────────────────────────────────────────────────────
+  - name: arima
+    order: [2, 1, 2]
+    seasonal_order: [1, 0, 1, 24]
+
+  # ── Linear ───────────────────────────────────────────────────────────────
+  - name: ridge
+    alpha: 1.0
+
+  # ── Tree ─────────────────────────────────────────────────────────────────
+  - name: random_forest
+    n_estimators: 200
+    max_depth: null
+    min_samples_leaf: 5
+    n_jobs: -1
+    random_state: 42
+
+  - name: xgboost
+    n_estimators: 300
+    learning_rate: 0.05
+    max_depth: 6
+    subsample: 0.8
+    colsample_bytree: 0.8
+    random_state: 42
+
+  # ── Deep NN ───────────────────────────────────────────────────────────────
+  - name: lstm
+    hidden_dim: 128
+    num_layers: 2
+    dropout: 0.1
+    lr: 0.001
+    epochs: 50
+    batch_size: 64
+
+  - name: transformer
+    d_model: 64
+    nhead: 4
+    num_layers: 2
+    dim_feedforward: 256
+    dropout: 0.1
+    causal: true
+    lr: 0.001
+    epochs: 50
+    batch_size: 64
+
+  - name: nbeats
+    num_stacks: 30
+    num_blocks_per_stack: 1
+    hidden_dim: 256
+    n_layers: 4
+    lr: 0.001
+    epochs: 50
+    batch_size: 64
+
+  - name: nhits
+    num_stacks: 3
+    num_blocks_per_stack: 1
+    hidden_dim: 256
+    n_layers: 2
+    lr: 0.001
+    epochs: 50
+    batch_size: 64
+
+  - name: tcn
+    hidden_channels: 64
+    num_levels: 4
+    kernel_size: 3
+    dropout: 0.1
+    lr: 0.001
+    epochs: 50
+    batch_size: 64
+
+  - name: nlinear
+    lr: 0.001
+    epochs: 50
+    batch_size: 64
+
+  - name: dlinear
+    kernel_size: 25
+    lr: 0.001
+    epochs: 50
+    batch_size: 64
+
+output:
+  benchmark_path:    experiments/results/seq2seq.csv
+  scaling_path:      experiments/results/scaling.csv
+  full_horizon_path: experiments/results/seq2seq_full_horizons.csv
+  cumulative_path:   experiments/results/seq2seq_cumulative.csv

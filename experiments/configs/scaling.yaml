@@ -1,0 +1,106 @@
+# WindBench Data-Scaling Experiment Config
+# Run with: python scripts/run_all.py --config experiments/configs/scaling.yaml --skip-benchmark
+#
+# Trains each model on 10%..100% of training runs (chronological slice) and
+# evaluates on the full test set.  Uses a 3-farm subset for tractable runtime:
+# Kelmarsh + Penmanshiel (UK) and nz_farm8 (largest NZ farm by row count).
+
+data:
+  raw_dir: data/raw
+  target_col: energy_total
+  farms: [kelmarsh]
+
+seq2seq:
+  lead_times: null                    # null = 1..72 (default)
+  eval_horizons: null                 # null = all 72 (only controls live print; CSV always logs all)
+  val_frac: 0.10
+  test_frac: 0.20
+  min_lead_coverage: 0.80
+  fill_method: interpolate
+  n_lags: 24                          # hours of observed production appended as context features
+  seed: 42
+
+scaling:
+  fractions: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+
+models:
+  # ── Linear ───────────────────────────────────────────────────────────────
+  - name: ridge
+    alpha: 1.0
+
+  # ── Tree ─────────────────────────────────────────────────────────────────
+  - name: random_forest
+    n_estimators: 200
+    max_depth: null
+    min_samples_leaf: 5
+    n_jobs: -1
+    random_state: 42
+
+  - name: xgboost
+    n_estimators: 300
+    learning_rate: 0.05
+    max_depth: 6
+    subsample: 0.8
+    colsample_bytree: 0.8
+    random_state: 42
+
+  # ── Deep NN ──────────────────────────────────────────────────────────────
+  - name: lstm
+    hidden_dim: 128
+    num_layers: 2
+    dropout: 0.1
+    lr: 0.001
+    epochs: 50
+    batch_size: 64
+
+  - name: transformer
+    d_model: 64
+    nhead: 4
+    num_layers: 2
+    dim_feedforward: 256
+    dropout: 0.1
+    causal: true
+    lr: 0.001
+    epochs: 50
+    batch_size: 64
+
+  - name: nbeats
+    num_stacks: 30
+    num_blocks_per_stack: 1
+    hidden_dim: 256
+    n_layers: 4
+    lr: 0.001
+    epochs: 50
+    batch_size: 64
+
+  - name: nhits
+    num_stacks: 3
+    num_blocks_per_stack: 1
+    hidden_dim: 256
+    n_layers: 2
+    lr: 0.001
+    epochs: 50
+    batch_size: 64
+
+  - name: tcn
+    hidden_channels: 64
+    num_levels: 4
+    kernel_size: 3
+    dropout: 0.1
+    lr: 0.001
+    epochs: 50
+    batch_size: 64
+
+  - name: nlinear
+    lr: 0.001
+    epochs: 50
+    batch_size: 64
+
+  - name: dlinear
+    kernel_size: 25
+    lr: 0.001
+    epochs: 50
+    batch_size: 64
+
+output:
+  scaling_path: experiments/results/scaling.csv
