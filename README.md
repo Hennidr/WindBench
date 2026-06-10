@@ -4,6 +4,19 @@ Benchmarking suite for wind energy production forecasting across multiple farms.
 All models operate in a **sequence-to-sequence** paradigm: one full NWP run
 (T lead-time steps × F weather features) in, energy at all T lead times out.
 
+## Data
+
+The full benchmark dataset (all 12 farm Parquet files, including the Kelmarsh and
+Penmanshiel files too large to ship in this repository) is archived on Zenodo:
+
+> Dropping, H. (2026). *WindBench dataset: multi-farm hourly wind energy production
+> with co-located ECMWF NWP forecasts.* Zenodo.
+> <https://doi.org/10.5281/zenodo.20628054>
+
+Download the archive, extract the `.parquet` files into `data/raw/`, and the
+benchmark and notebooks will pick them up automatically. See
+[`data/raw/README.md`](data/raw/README.md) for the schema.
+
 ## Structure
 
 ```

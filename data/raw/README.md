@@ -16,31 +16,34 @@ The loader (`windbench/data/loader.py`) sums `energy_total` across turbines
 and averages weather columns to produce one row per
 `(production_time, prediction_issue_time)` pair.
 
-## Shipped with the repo
+## Full dataset on Zenodo
+
+All 12 farm Parquet files are archived together at:
+
+<https://doi.org/10.5281/zenodo.20628054>
+
+This includes the two files that exceed GitHub's 100 MB per-file limit and
+are therefore not shipped in this repository:
+
+- **`kelmarsh.parquet`** (~136 MB) — Kelmarsh wind farm, UK
+- **`penmanshiel.parquet`** (~305 MB) — Penmanshiel wind farm, UK
+
+## What's in the repo
 
 The 10 New Zealand farm files (`nz_farm4.parquet` … `nz_farm13.parquet`,
-~200 MB total) are included directly.
+~200 MB total) are included directly so the benchmark is runnable out of
+the box on a subset.
 
-## Not shipped — fetch manually
-
-Two files exceed GitHub's 100 MB per-file limit and must be downloaded
-separately into this directory:
-
-- **`kelmarsh.parquet`** (~136 MB) — Kelmarsh wind farm, UK.
-  Source: Plumley, C. (2022). *Kelmarsh wind farm data*. Zenodo.
-  <https://doi.org/10.5281/zenodo.5841833>
-- **`penmanshiel.parquet`** (~305 MB) — Penmanshiel wind farm, UK.
-  Source: Plumley, C. (2022). *Penmanshiel wind farm data*. Zenodo.
-  <https://doi.org/10.5281/zenodo.5946808>
-
-After downloading, place both files in this directory:
+For the full 12-farm benchmark, download the Zenodo archive and extract
+the two missing files into this directory:
 
 ```
 data/raw/
-  kelmarsh.parquet
-  penmanshiel.parquet
-  nz_farm4.parquet
+  kelmarsh.parquet      ← from Zenodo
+  penmanshiel.parquet   ← from Zenodo
+  nz_farm4.parquet      ← shipped
   ...
+  nz_farm13.parquet     ← shipped
 ```
 
 The benchmark and notebooks will then discover all 12 farms automatically.
